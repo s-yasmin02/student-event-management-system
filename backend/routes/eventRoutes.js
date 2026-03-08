@@ -1,22 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const Event = require("../models/Event");
+const eventController = require("../controllers/eventController");
+const upload = require("../middleware/upload");
 
-// Create Event
-router.post("/", async (req, res) => {
-  try {
-    const event = new Event(req.body);
-    await event.save();
-    res.status(201).json(event);
-  } catch (err) {
-    res.status(400).json({ message: "Duplicate title not allowed!" });
-  }
-});
+// Create event
+router.post("/", upload.single("image"), eventController.createEvent);
 
-// Get Events
-router.get("/", async (req, res) => {
-  const events = await Event.find();
-  res.json(events);
-});
+// Get all events
+router.get("/", eventController.getEvents);
+
+// Update event
+router.put("/:id", upload.single("image"), eventController.updateEvent);
+
+// Delete event
+router.delete("/:id", eventController.deleteEvent);
 
 module.exports = router;
