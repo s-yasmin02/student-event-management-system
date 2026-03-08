@@ -5,6 +5,18 @@ const Event = require("../models/Event");
 // =======================
 exports.createEvent = async (req, res) => {
   try {
+    console.log("==== INCOMING CREATE EVENT REQUEST ====");
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("Body parsing result:", req.body);
+    console.log("File parsing result:", req.file);
+    console.log("=======================================");
+
+    if (!req.body || !req.body.title) {
+      return res.status(400).json({
+        message: "Title is required! Ensure you use 'raw JSON' or 'form-data' explicitly in Postman."
+      });
+    }
+
     const existingEvent = await Event.findOne({ title: req.body.title });
 
     if (existingEvent) {
@@ -51,6 +63,12 @@ exports.getEvents = async (req, res) => {
 // =======================
 exports.updateEvent = async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({
+        message: "Request body is missing! Ensure you use 'raw JSON' or 'form-data' explicitly in Postman."
+      });
+    }
+
     const event = await Event.findById(req.params.id);
 
     if (!event) {
