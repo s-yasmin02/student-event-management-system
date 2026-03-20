@@ -33,6 +33,9 @@ exports.createEvent = async (req, res) => {
       registrationDeadline: req.body.registrationDeadline,
       capacity: req.body.capacity,
       description: req.body.description,
+      status: req.body.status || "Upcoming",
+      isFeatured: req.body.isFeatured === 'true' || req.body.isFeatured === true,
+      isDraft: req.body.isDraft === 'true' || req.body.isDraft === true,
       image: req.file ? req.file.filename : null
     });
 
