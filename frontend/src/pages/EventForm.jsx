@@ -24,6 +24,7 @@ export default function EventForm() {
   
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     if (isEditing) {
@@ -66,8 +67,31 @@ export default function EventForm() {
     setImageFile(e.target.files[0]);
   };
 
+  useEffect(() => {
+    if (!formData.date || !formData.registrationDeadline) {
+      setDateError('');
+      return;
+    }
+
+    const eventDate = new Date(formData.date);
+    const deadline = new Date(formData.registrationDeadline);
+
+    if (deadline > eventDate) {
+      setDateError('Registration deadline cannot be later than event date.');
+      return;
+    }
+
+    setDateError('');
+  }, [formData.date, formData.registrationDeadline]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (dateError) {
+      alert(dateError);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -134,12 +158,28 @@ export default function EventForm() {
 
             <div className="input-group">
               <label className="input-label">Event Date *</label>
-              <input type="date" name="date" value={formData.date} onChange={handleChange} className="input-field" required />
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="input-field"
+                min={formData.registrationDeadline || undefined}
+                required
+              />
             </div>
 
             <div className="input-group">
               <label className="input-label">Registration Deadline *</label>
-              <input type="date" name="registrationDeadline" value={formData.registrationDeadline} onChange={handleChange} className="input-field" required />
+              <input
+                type="date"
+                name="registrationDeadline"
+                value={formData.registrationDeadline}
+                onChange={handleChange}
+                className="input-field"
+                max={formData.date || undefined}
+                required
+              />
             </div>
 
             {isEditing && (
@@ -166,6 +206,8 @@ export default function EventForm() {
             <textarea name="description" value={formData.description} onChange={handleChange} className="input-field text-area" rows="4" required></textarea>
           </div>
 
+          {dateError && <p className="form-error-message">{dateError}</p>}
+
           <div className="checkbox-group-container">
             <label className="checkbox-label">
               <input type="checkbox" name="isDraft" checked={formData.isDraft} onChange={handleChange} />
@@ -179,7 +221,7 @@ export default function EventForm() {
 
           <div className="form-actions">
             <button type="button" onClick={() => navigate(-1)} className="btn btn-outline">Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button type="submit" className="btn btn-primary" disabled={loading || !!dateError}>
               <Save size={18} />
               {loading ? 'Saving...' : 'Save Event'}
             </button>
