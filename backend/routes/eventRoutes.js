@@ -7,9 +7,7 @@ const upload = require("../middleware/upload");
 router.post("/", (req, res, next) => {
   upload.single("image")(req, res, (err) => {
     if (err) {
-      // If it's a multer error (e.g. not multipart), just continue without a file. 
-      // The body parser will handle the JSON instead.
-      return next(); 
+      return next();
     }
     next();
   });
@@ -17,6 +15,9 @@ router.post("/", (req, res, next) => {
 
 // Get all events
 router.get("/", eventController.getEvents);
+
+// Get single event
+router.get("/:id", eventController.getEventById);
 
 // Update event
 router.put("/:id", upload.single("image"), eventController.updateEvent);

@@ -64,23 +64,20 @@ exports.createEvent = async (req, res) => {
       capacity: req.body.capacity,
       description: req.body.description,
       status: req.body.status || "Upcoming",
-      isFeatured: req.body.isFeatured === 'true' || req.body.isFeatured === true,
-      isDraft: req.body.isDraft === 'true' || req.body.isDraft === true,
+      isFeatured: req.body.isFeatured === "true" || req.body.isFeatured === true,
+      isDraft: req.body.isDraft === "true" || req.body.isDraft === true,
       image: req.file ? req.file.filename : null
     });
 
     const savedEvent = await newEvent.save();
     res.status(201).json(savedEvent);
-
   } catch (err) {
-    // Mongo duplicate key (unique index) error
     if (err && err.code === 11000) {
       return res.status(400).json({
         message: "Duplicate title not allowed!"
       });
     }
 
-    // Mongoose validation error (missing required fields, invalid types, etc.)
     if (err && err.name === "ValidationError") {
       const firstError = Object.values(err.errors || {})[0];
       return res.status(400).json({
@@ -91,7 +88,6 @@ exports.createEvent = async (req, res) => {
     res.status(500).json({ message: err?.message || "Internal server error" });
   }
 };
-
 
 // =======================
 // GET ALL EVENTS
@@ -105,6 +101,26 @@ exports.getEvents = async (req, res) => {
   }
 };
 
+// =======================
+// GET SINGLE EVENT
+// =======================
+exports.getEventById = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        message: "Event not found"
+      });
+    }
+
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({
+      message: err?.message || "Internal server error"
+    });
+  }
+};
 
 // =======================
 // UPDATE EVENT
@@ -125,19 +141,16 @@ exports.updateEvent = async (req, res) => {
       });
     }
 
-    // What registeredCount will be after update
     const newRegisteredCount =
       req.body.registeredCount !== undefined
         ? Number(req.body.registeredCount)
         : event.registeredCount;
 
-    // What capacity will be after update
     const newCapacity =
       req.body.capacity !== undefined
         ? Number(req.body.capacity)
         : event.capacity;
 
-    // Validation
     if (newCapacity < newRegisteredCount) {
       return res.status(400).json({
         message: "Capacity cannot be less than registered students"
@@ -163,7 +176,6 @@ exports.updateEvent = async (req, res) => {
     );
 
     res.json(updatedEvent);
-
   } catch (err) {
     if (err && err.code === 11000) {
       return res.status(400).json({

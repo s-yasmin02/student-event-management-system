@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+
 const app = express();
 
 app.use(cors());
@@ -12,7 +13,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 const eventRoutes = require("./routes/eventRoutes");
+const registrationRoutes = require("./routes/registrationRoutes");
+
 app.use("/api/events", eventRoutes);
+app.use("/api/registrations", registrationRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -14,6 +14,7 @@ function PaymentPage() {
 
   const [showPortal, setShowPortal] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -31,6 +32,8 @@ function PaymentPage() {
       ...form,
       [name]: value
     });
+
+    setError("");
   };
 
   const handleOpenPortal = (e) => {
@@ -38,14 +41,47 @@ function PaymentPage() {
     setShowPortal(true);
   };
 
-  const handleCompletePayment = () => {
-    setProcessing(true);
+  const handleCompletePayment = async () => {
+    try {
+      setProcessing(true);
+      setError("");
 
-    setTimeout(() => {
+      const registrationId = localStorage.getItem("registrationId");
+
+      if (!registrationId) {
+        throw new Error("Registration not found. Please register again.");
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/registrations/${registrationId}/payment`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            paymentStatus: "Paid"
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Payment update failed");
+      }
+
+      localStorage.setItem("paymentStatus", "Paid");
+
+      setTimeout(() => {
+        setProcessing(false);
+        alert("Payment Successful ✅");
+        navigate("/");
+      }, 1200);
+    } catch (err) {
       setProcessing(false);
-      alert("Payment Successful ✅");
-      navigate("/");
-    }, 2000);
+      setError(err.message || "Something went wrong");
+    }
   };
 
   return (
@@ -121,6 +157,8 @@ function PaymentPage() {
             </div>
           </div>
 
+          {error && <p style={styles.error}>{error}</p>}
+
           <button type="submit" style={styles.button}>
             Proceed to Payment
           </button>
@@ -140,9 +178,12 @@ function PaymentPage() {
                 <strong>Card Holder:</strong> {form.name}
               </p>
               <p style={styles.portalLine}>
-                <strong>Card Number:</strong> **** **** **** {form.cardNumber.replace(/\s/g, "").slice(-4)}
+                <strong>Card Number:</strong> **** **** ****{" "}
+                {form.cardNumber.replace(/\s/g, "").slice(-4)}
               </p>
             </div>
+
+            {error && <p style={styles.error}>{error}</p>}
 
             <button
               onClick={handleCompletePayment}
@@ -227,6 +268,10 @@ const styles = {
     fontWeight: "bold",
     fontSize: "1rem",
     cursor: "pointer"
+  },
+  error: {
+    color: "#f87171",
+    marginTop: "6px"
   },
   overlay: {
     position: "fixed",

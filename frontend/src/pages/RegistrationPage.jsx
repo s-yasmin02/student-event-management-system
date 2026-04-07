@@ -12,17 +12,55 @@ function RegistrationPage() {
     year: ""
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    localStorage.setItem("registrationData", JSON.stringify(formData));
-    navigate(`/payment/${id}`);
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch("http://localhost:5000/api/registrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          eventId: id,
+          studentName: formData.studentName,
+          email: formData.email,
+          department: formData.department,
+          year: formData.year
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      localStorage.setItem("registrationData", JSON.stringify(formData));
+      localStorage.setItem("registrationId", data.registration._id);
+      localStorage.setItem("eventId", id);
+
+      alert("Registration successful");
+      navigate(`/payment/${id}`);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,8 +113,10 @@ function RegistrationPage() {
             style={styles.input}
           />
 
-          <button type="submit" style={styles.button}>
-            Proceed to Payment
+          {error && <p style={styles.error}>{error}</p>}
+
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Submitting..." : "Proceed to Payment"}
           </button>
         </form>
       </div>
@@ -126,6 +166,10 @@ const styles = {
     color: "white",
     outline: "none",
     fontSize: "1rem"
+  },
+  error: {
+    color: "#f87171",
+    marginTop: "4px"
   },
   button: {
     marginTop: "15px",
