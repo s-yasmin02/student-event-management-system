@@ -1,5 +1,22 @@
 const Event = require("../models/Event");
 
+const isValidDateValue = (value) => {
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime());
+};
+
+const hasInvalidDeadline = (registrationDeadline, eventDate) => {
+  if (!registrationDeadline || !eventDate) {
+    return false;
+  }
+
+  if (!isValidDateValue(registrationDeadline) || !isValidDateValue(eventDate)) {
+    return false;
+  }
+
+  return new Date(registrationDeadline) > new Date(eventDate);
+};
+
 // =======================
 // CREATE EVENT
 // =======================
@@ -17,7 +34,14 @@ exports.createEvent = async (req, res) => {
       });
     }
 
-    const existingEvent = await Event.findOne({ title: req.body.title });
+    const title = String(req.body.title).trim();
+    if (!title) {
+      return res.status(400).json({
+        message: "Title is required!"
+      });
+    }
+
+    const existingEvent = await Event.findOne({ title });
 
     if (existingEvent) {
       return res.status(400).json({
@@ -25,8 +49,14 @@ exports.createEvent = async (req, res) => {
       });
     }
 
+    if (hasInvalidDeadline(req.body.registrationDeadline, req.body.date)) {
+      return res.status(400).json({
+        message: "Registration deadline cannot be later than event date"
+      });
+    }
+
     const newEvent = new Event({
-      title: req.body.title,
+      title,
       category: req.body.category,
       location: req.body.location,
       date: req.body.date,
@@ -43,7 +73,22 @@ exports.createEvent = async (req, res) => {
     res.status(201).json(savedEvent);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // Mongo duplicate key (unique index) error
+    if (err && err.code === 11000) {
+      return res.status(400).json({
+        message: "Duplicate title not allowed!"
+      });
+    }
+
+    // Mongoose validation error (missing required fields, invalid types, etc.)
+    if (err && err.name === "ValidationError") {
+      const firstError = Object.values(err.errors || {})[0];
+      return res.status(400).json({
+        message: firstError?.message || "Validation error"
+      });
+    }
+
+    res.status(500).json({ message: err?.message || "Internal server error" });
   }
 };
 
@@ -99,16 +144,41 @@ exports.updateEvent = async (req, res) => {
       });
     }
 
+    const newDate = req.body.date !== undefined ? req.body.date : event.date;
+    const newRegistrationDeadline =
+      req.body.registrationDeadline !== undefined
+        ? req.body.registrationDeadline
+        : event.registrationDeadline;
+
+    if (hasInvalidDeadline(newRegistrationDeadline, newDate)) {
+      return res.status(400).json({
+        message: "Registration deadline cannot be later than event date"
+      });
+    }
+
     const updatedEvent = await Event.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     res.json(updatedEvent);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err && err.code === 11000) {
+      return res.status(400).json({
+        message: "Duplicate title not allowed!"
+      });
+    }
+
+    if (err && err.name === "ValidationError") {
+      const firstError = Object.values(err.errors || {})[0];
+      return res.status(400).json({
+        message: firstError?.message || "Validation error"
+      });
+    }
+
+    res.status(500).json({ message: err?.message || "Internal server error" });
   }
 };
 
