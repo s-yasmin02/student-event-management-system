@@ -90,12 +90,19 @@ export default function EventDetails() {
             </div>
           </div>
           
-          <div className="details-actions">
-            <div className="action-group">
-              <Link to={`/edit/${event._id}`} className="btn btn-outline"><Edit size={18} /> Edit</Link>
-              <button onClick={handleDelete} className="btn btn-danger"><Trash2 size={18} /> Delete</button>
-            </div>
+         <div className="details-actions">
+          <div className="action-group">
+            {!isFull && !isInactive ? (
+              <Link to={`/register/${event._id}`} className="btn btn-primary">
+                Register Now
+              </Link>
+            ) : (
+              <button className="btn btn-secondary" disabled>
+                {isFull ? 'Event Full' : 'Registration Closed'}
+              </button>
+            )}
           </div>
+        </div>
         </div>
       </div>
       
