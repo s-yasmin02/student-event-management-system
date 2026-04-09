@@ -99,7 +99,11 @@ export default function Dashboard() {
       ) : (
         <div className="events-grid">
           {filteredEvents.map(event => (
-            <EventCard key={event._id} event={event} />
+            <EventCard
+              key={event._id}
+              event={event}
+              onDelete={(id) => setEvents(prev => prev.filter(e => e._id !== id))}
+            />
           ))}
         </div>
       )}
