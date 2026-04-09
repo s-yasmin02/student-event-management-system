@@ -27,33 +27,33 @@ export default function EventForm() {
   const [dateError, setDateError] = useState('');
 
   useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const { data } = await api.get('/events');
+        const found = data.find(e => e._id === id);
+        if (found) {
+          setFormData({
+            title: found.title || '',
+            category: found.category || '',
+            location: found.location || '',
+            date: found.date ? found.date.split('T')[0] : '',
+            registrationDeadline: found.registrationDeadline ? found.registrationDeadline.split('T')[0] : '',
+            capacity: found.capacity || 0,
+            description: found.description || '',
+            status: found.status || 'Upcoming',
+            isDraft: found.isDraft ?? true,
+            isFeatured: found.isFeatured ?? false
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     if (isEditing) {
       fetchEventData();
     }
-  }, [id]);
-
-  const fetchEventData = async () => {
-    try {
-      const { data } = await api.get('/events');
-      const found = data.find(e => e._id === id);
-      if (found) {
-        setFormData({
-          title: found.title || '',
-          category: found.category || '',
-          location: found.location || '',
-          date: found.date ? found.date.split('T')[0] : '',
-          registrationDeadline: found.registrationDeadline ? found.registrationDeadline.split('T')[0] : '',
-          capacity: found.capacity || 0,
-          description: found.description || '',
-          status: found.status || 'Upcoming',
-          isDraft: found.isDraft ?? true,
-          isFeatured: found.isFeatured ?? false
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  }, [id, isEditing]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
