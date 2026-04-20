@@ -54,6 +54,13 @@
   color: var(--bg-color);
 }
 
+.form-error-message {
+  margin-top: 0.75rem;
+  color: #b42318;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

@@ -1,5 +1,22 @@
 const Event = require("../models/Event");
 
+const isValidDateValue = (value) => {
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime());
+};
+
+const hasInvalidDeadline = (registrationDeadline, eventDate) => {
+  if (!registrationDeadline || !eventDate) {
+    return false;
+  }
+
+  if (!isValidDateValue(registrationDeadline) || !isValidDateValue(eventDate)) {
+    return false;
+  }
+
+  return new Date(registrationDeadline) > new Date(eventDate);
+};
+
 // =======================
 // CREATE EVENT
 // =======================
@@ -29,6 +46,12 @@ exports.createEvent = async (req, res) => {
     if (existingEvent) {
       return res.status(400).json({
         message: "Duplicate title not allowed!"
+      });
+    }
+
+    if (hasInvalidDeadline(req.body.registrationDeadline, req.body.date)) {
+      return res.status(400).json({
+        message: "Registration deadline cannot be later than event date"
       });
     }
 
@@ -118,6 +141,18 @@ exports.updateEvent = async (req, res) => {
     if (newCapacity < newRegisteredCount) {
       return res.status(400).json({
         message: "Capacity cannot be less than registered students"
+      });
+    }
+
+    const newDate = req.body.date !== undefined ? req.body.date : event.date;
+    const newRegistrationDeadline =
+      req.body.registrationDeadline !== undefined
+        ? req.body.registrationDeadline
+        : event.registrationDeadline;
+
+    if (hasInvalidDeadline(newRegistrationDeadline, newDate)) {
+      return res.status(400).json({
+        message: "Registration deadline cannot be later than event date"
       });
     }
 
