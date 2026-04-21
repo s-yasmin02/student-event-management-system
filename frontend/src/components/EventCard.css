@@ -178,3 +178,15 @@
 .status-upcoming { background: #3b82f6; }
 .status-completed { background: #10b981; }
 .status-cancelled { background: #ef4444; }
+
+.price-item {
+  font-weight: 600;
+}
+
+.price-free {
+  color: #34d399;
+}
+
+.price-paid {
+  color: #fbbf24;
+}

@@ -16,6 +16,7 @@ export default function EventForm() {
     date: '',
     registrationDeadline: '',
     capacity: 0,
+    price: 0,
     description: '',
     status: 'Upcoming',
     isDraft: true,
@@ -39,6 +40,7 @@ export default function EventForm() {
             date: found.date ? found.date.split('T')[0] : '',
             registrationDeadline: found.registrationDeadline ? found.registrationDeadline.split('T')[0] : '',
             capacity: found.capacity || 0,
+            price: found.price ?? 0,
             description: found.description || '',
             status: found.status || 'Upcoming',
             isDraft: found.isDraft ?? true,
@@ -154,6 +156,11 @@ export default function EventForm() {
             <div className="input-group">
               <label className="input-label">Capacity *</label>
               <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} className="input-field" min="1" required />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Registration Fee (LKR) <span style={{fontWeight:'400', color:'var(--text-muted)', fontSize:'0.8rem'}}>(0 = Free)</span></label>
+              <input type="number" name="price" value={formData.price} onChange={handleChange} className="input-field" min="0" step="1" placeholder="0" />
             </div>
 
             <div className="input-group">

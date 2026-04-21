@@ -83,6 +83,9 @@ function EventsPage() {
                 <p style={styles.info}>
                   👥 {event.registeredCount} / {event.capacity} Registered
                 </p>
+                <p style={event.price > 0 ? styles.pricePaid : styles.priceFree}>
+                  {event.price > 0 ? `💰 LKR ${event.price}` : '🎟️ Free Entry'}
+                </p>
                 {event.isFeatured && (
                   <span style={styles.featured}>⭐ Featured</span>
                 )}
@@ -154,6 +157,18 @@ const styles = {
   },
   title: { marginBottom: "10px" },
   info: { color: "#cbd5e1", marginBottom: "8px" },
+  priceFree: {
+    color: "#34d399",
+    fontWeight: "700",
+    marginBottom: "8px",
+    fontSize: "0.95rem"
+  },
+  pricePaid: {
+    color: "#fbbf24",
+    fontWeight: "700",
+    marginBottom: "8px",
+    fontSize: "0.95rem"
+  },
   button: {
     display: "inline-block",
     marginTop: "12px",

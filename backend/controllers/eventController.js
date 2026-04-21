@@ -62,6 +62,7 @@ exports.createEvent = async (req, res) => {
       date: req.body.date,
       registrationDeadline: req.body.registrationDeadline,
       capacity: req.body.capacity,
+      price: req.body.price !== undefined ? Number(req.body.price) : 0,
       description: req.body.description,
       status: req.body.status || "Upcoming",
       isFeatured: req.body.isFeatured === 'true' || req.body.isFeatured === true,

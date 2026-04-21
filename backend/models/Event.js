@@ -12,6 +12,7 @@ const eventSchema = new mongoose.Schema({
     default: "Upcoming"
   },
   capacity: { type: Number, required: true },
+  price: { type: Number, default: 0 },
   registeredCount: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },
   isDraft: { type: Boolean, default: true },
