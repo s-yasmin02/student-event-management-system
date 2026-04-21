@@ -80,3 +80,24 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true, minlength: 6 },
+    role: { type: String, enum: ["student", "admin"], default: "student" }
+  },
+  { timestamps: true }
+);
+
+// Hash password before saving
+// Mongoose 9: async hooks must NOT call next() — just return
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+});
+
+// Compare passwords
+userSchema.methods.matchPassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+module.exports = mongoose.model("User", userSchema);
