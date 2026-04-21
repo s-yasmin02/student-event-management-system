@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function PaymentPage() {
   const navigate = useNavigate();
-  const { id } = useParams(); // event ID (unused in UI but here for context)
 
   const [form, setForm] = useState({
     name: "",
@@ -29,7 +27,10 @@ function PaymentPage() {
       value = value.replace(/\D/g, "");
     }
 
-    setForm({ ...form, [name]: value });
+    setForm({
+      ...form,
+      [name]: value
+    });
   };
 
   const handleOpenPortal = (e) => {
@@ -37,33 +38,14 @@ function PaymentPage() {
     setShowPortal(true);
   };
 
-  const handleCompletePayment = async () => {
+  const handleCompletePayment = () => {
     setProcessing(true);
-    try {
-      // Update payment status in backend if we have a registrationId
-      const registrationId = localStorage.getItem("registrationId");
-      if (registrationId) {
-        await api.patch(`/registrations/${registrationId}/payment`, {
-          paymentStatus: "completed"
-        });
-        localStorage.removeItem("registrationId");
-      }
 
-      // Simulate processing delay
-      setTimeout(() => {
-        setProcessing(false);
-        alert("Payment Successful ✅ You are now registered!");
-        navigate("/events");
-      }, 1500);
-    } catch (err) {
-      console.error("Payment update failed:", err);
-      // Still navigate even if backend update fails
-      setTimeout(() => {
-        setProcessing(false);
-        alert("Payment Successful ✅");
-        navigate("/events");
-      }, 1500);
-    }
+    setTimeout(() => {
+      setProcessing(false);
+      alert("Payment Successful ✅");
+      navigate("/");
+    }, 2000);
   };
 
   return (
@@ -202,9 +184,20 @@ const styles = {
     boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
     color: "white"
   },
-  title: { textAlign: "center", marginBottom: "20px", fontSize: "2.2rem" },
-  form: { display: "flex", flexDirection: "column", gap: "12px" },
-  label: { fontSize: "1rem", fontWeight: "500" },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px",
+    fontSize: "2.2rem"
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px"
+  },
+  label: {
+    fontSize: "1rem",
+    fontWeight: "500"
+  },
   input: {
     width: "100%",
     boxSizing: "border-box",
@@ -216,8 +209,14 @@ const styles = {
     outline: "none",
     fontSize: "1rem"
   },
-  row: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" },
-  smallField: { width: "100%" },
+  row: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    gap: "10px"
+  },
+  smallField: {
+    width: "100%"
+  },
   button: {
     marginTop: "15px",
     padding: "14px",
@@ -248,8 +247,13 @@ const styles = {
     boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
     textAlign: "center"
   },
-  portalTitle: { marginBottom: "10px" },
-  portalText: { marginBottom: "20px", color: "#d1d5db" },
+  portalTitle: {
+    marginBottom: "10px"
+  },
+  portalText: {
+    marginBottom: "20px",
+    color: "#d1d5db"
+  },
   portalCard: {
     background: "rgba(255,255,255,0.05)",
     padding: "15px",
@@ -257,7 +261,9 @@ const styles = {
     marginBottom: "20px",
     textAlign: "left"
   },
-  portalLine: { margin: "8px 0" },
+  portalLine: {
+    margin: "8px 0"
+  },
   portalButton: {
     width: "100%",
     padding: "12px",
