@@ -33,22 +33,19 @@ export default function EventForm() {
 
   const fetchEventData = async () => {
     try {
-      const { data } = await api.get('/events');
-      const found = data.find(e => e._id === id);
-      if (found) {
-        setFormData({
-          title: found.title || '',
-          category: found.category || '',
-          location: found.location || '',
-          date: found.date ? found.date.split('T')[0] : '',
-          registrationDeadline: found.registrationDeadline ? found.registrationDeadline.split('T')[0] : '',
-          capacity: found.capacity || 0,
-          description: found.description || '',
-          status: found.status || 'Upcoming',
-          isDraft: found.isDraft ?? true,
-          isFeatured: found.isFeatured ?? false
-        });
-      }
+      const { data } = await api.get(`/events/${id}`);
+      setFormData({
+        title: data.title || '',
+        category: data.category || '',
+        location: data.location || '',
+        date: data.date ? data.date.split('T')[0] : '',
+        registrationDeadline: data.registrationDeadline ? data.registrationDeadline.split('T')[0] : '',
+        capacity: data.capacity || 0,
+        description: data.description || '',
+        status: data.status || 'Upcoming',
+        isDraft: data.isDraft ?? true,
+        isFeatured: data.isFeatured ?? false
+      });
     } catch (err) {
       console.error(err);
     }

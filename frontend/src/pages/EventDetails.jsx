@@ -16,9 +16,8 @@ export default function EventDetails() {
 
   const fetchEvent = async () => {
     try {
-      const { data } = await api.get('/events');
-      const found = data.find(e => e._id === id);
-      if (found) setEvent(found);
+      const { data } = await api.get(`/events/${id}`);
+      setEvent(data);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -101,7 +100,13 @@ export default function EventDetails() {
       
       <div className="details-body glass-panel">
         <h2>About this Event</h2>
-        <p className="details-description">{event.description}</p>
+        {event.description ? (
+          <p className="details-description">{event.description}</p>
+        ) : (
+          <p className="details-description" style={{ fontStyle: 'italic', opacity: 0.5 }}>
+            No description provided. Click <strong>Edit</strong> above to add one.
+          </p>
+        )}
         <div className="deadline-notice">
           <strong>Registration Deadline:</strong> {deadline}
         </div>

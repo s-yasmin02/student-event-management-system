@@ -13,6 +13,7 @@ const eventSchema = new mongoose.Schema({
   },
   capacity: { type: Number, required: true },
   registeredCount: { type: Number, default: 0 },
+  description: { type: String, default: '' },
   isFeatured: { type: Boolean, default: false },
   isDraft: { type: Boolean, default: true },
   image: { type: String }
