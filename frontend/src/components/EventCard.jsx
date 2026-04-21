@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Pencil, Trash2 } from 'lucide-react';
+import { MapPin, Calendar, Users, Pencil, Trash2, Banknote } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import './EventCard.css';
@@ -55,6 +55,12 @@ export default function EventCard({ event, onDelete }) {
           <div className="detail-item">
             <Users size={16} />
             <span>{event.registeredCount || 0} / {event.capacity} Registered</span>
+          </div>
+          <div className="detail-item price-item">
+            <Banknote size={16} />
+            <span className={event.price > 0 ? 'price-paid' : 'price-free'}>
+              {event.price > 0 ? `LKR ${event.price}` : 'Free'}
+            </span>
           </div>
         </div>
 

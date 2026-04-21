@@ -106,6 +106,13 @@ function EventDetailsPage() {
             <p>
               <strong>👥 Seats:</strong> {event.registeredCount} / {event.capacity} Registered
             </p>
+            <p style={event.price > 0
+              ? { color: "#fbbf24", fontWeight: "700", fontSize: "1.05rem" }
+              : { color: "#34d399", fontWeight: "700", fontSize: "1.05rem" }
+            }>
+              <strong style={{ color: "#cbd5e1" }}>💰 Fee:</strong>{" "}
+              {event.price > 0 ? `LKR ${event.price}` : 'Free'}
+            </p>
           </div>
 
           {event.description && (
@@ -116,7 +123,7 @@ function EventDetailsPage() {
 
           {canRegister ? (
             <Link to={`/register/${event._id}`} style={styles.linkBtn}>
-              Register Now
+              Register Now{event.price > 0 ? ` — LKR ${event.price}` : ' — Free'}
             </Link>
           ) : (
             <div style={styles.disabledBtn}>
