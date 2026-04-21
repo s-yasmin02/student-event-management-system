@@ -1,22 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDays, ShieldCheck, Calendar, Ticket, LineChart, GraduationCap, Users } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import LandingHeader from '../components/LandingHeader';
 import LandingFooter from '../components/LandingFooter';
 import './Landing.css';
 export default function Landing() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Error parsing user from localStorage", e);
-      }
-    }
-  }, []);
+  const { user } = useAuth();
+  const dashboardLink = user?.role === 'admin' ? '/admin' : '/events';
 
   return (
     <div className="landing-page dark-theme">
@@ -36,7 +26,7 @@ export default function Landing() {
             Elevate student life with Evenza. The premium portal for discovering campus galas, technical symposiums, and cultural festivals through an immersive digital experience.
           </p>
           <div className="hero-buttons">
-            <Link to="/dashboard" className="btn-primary-lg">Get Started</Link>
+            <Link to={user ? dashboardLink : '/login'} className="btn-primary-lg">Get Started</Link>
             <a href="#features" className="btn-outline-lg">Learn More</a>
           </div>
         </div>
@@ -152,7 +142,7 @@ export default function Landing() {
              <li><ShieldCheck size={16}/> Mobile-ready QR ticket entry</li>
              <li><ShieldCheck size={16}/> Direct RSVP and notification alerts</li>
           </ul>
-          <Link to="/dashboard" className="role-btn pink-btn">Student Portal</Link>
+          <Link to="/events" className="role-btn pink-btn">Student Portal</Link>
         </div>
         <div className="role-card">
           <div className="role-header">
@@ -164,7 +154,7 @@ export default function Landing() {
              <li><ShieldCheck size={16}/> Automated approval workflows</li>
              <li><ShieldCheck size={16}/> Comprehensive reporting suite</li>
           </ul>
-          <Link to="/dashboard" className="role-btn dark-btn">Admin Console</Link>
+          <Link to="/admin" className="role-btn dark-btn">Admin Console</Link>
         </div>
       </section>
 
@@ -173,7 +163,7 @@ export default function Landing() {
         <div className="cta-box">
           <h2>{user ? `Ready to jump back in, ${user.name}?` : 'Ready to Get Started?'}</h2>
           <p>Join thousands of students and faculty members in shaping the future of university event management.</p>
-          <Link to={user ? "/dashboard" : "/register"} className="btn-register-dark">
+          <Link to={user ? dashboardLink : '/register'} className="btn-register-dark">
             {user ? 'Go to Dashboard' : 'Register Now'}
           </Link>
         </div>

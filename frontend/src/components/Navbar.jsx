@@ -43,6 +43,7 @@ export default function Navbar() {
             <>
               <Link to="/admin" className="navbar-text-link">Dashboard</Link>
               <Link to="/admin/registrations" className="navbar-text-link">Registrations</Link>
+              <Link to="/admin/users" className="navbar-text-link">Users</Link>
               <Link to="/create" className="btn btn-primary btn-sm">
                 <PlusCircle size={18} />
                 Create Event

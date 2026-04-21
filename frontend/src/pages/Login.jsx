@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CalendarDays, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import './Login.css';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -27,13 +29,12 @@ export default function Login() {
     try {
       const response = await api.post('/auth/login', formData);
       const { token, user } = response.data;
-      
-      // Save auth data
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Proceed to Landing Page
-      navigate('/');
+
+      // Update AuthContext so ProtectedRoute/AdminRoute work immediately
+      login(user, token);
+
+      // Redirect based on role
+      navigate(user.role === 'admin' ? '/admin' : '/events', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
     } finally {

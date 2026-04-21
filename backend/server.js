@@ -14,10 +14,12 @@ app.use("/uploads", express.static("uploads"));
 const eventRoutes = require("./routes/eventRoutes");
 const authRoutes = require("./routes/authRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 app.use("/api/events", eventRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/registrations", registrationRoutes);
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 

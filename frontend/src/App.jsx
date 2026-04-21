@@ -1,8 +1,20 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Dashboard from './pages/Dashboard';
-import EventDetails from './pages/EventDetails';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
+
+// ── Admin pages ──────────────────────────────────────────────────────────────
+import Dashboard from './pages/Dashboard';           // admin event management dashboard
+import EventDetails from './pages/EventDetails';     // admin event detail (edit/delete)
 import EventForm from './pages/EventForm';
+
+// ── Student pages ─────────────────────────────────────────────────────────────
+import EventsPage from './pages/EventsPage';               // student event listing
+import EventDetailsPage from './pages/EventDetailsPage';   // student event detail (read-only + register)
+import RegistrationPage from './pages/RegistrationPage';   // event registration form
+import PaymentPage from './pages/PaymentPage';             // payment
+
+// ── Shared / Auth pages ───────────────────────────────────────────────────────
 import Landing from './pages/Landing';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -11,34 +23,68 @@ import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import PublicProfile from './pages/PublicProfile';
 import UserManagement from './pages/UserManagement';
+import AdminRegistrationsPage from './pages/AdminRegistrationsPage';
 import VerifyEmailInfo from './pages/VerifyEmailInfo';
+
+// Redirects already-logged-in users away from /login and /register
+function GuestRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div style={{ color: 'white', padding: '40px' }}>Loading...</div>;
+  if (user) return <Navigate to={user.role === 'admin' ? '/admin' : '/events'} replace />;
+  return children;
+}
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavbarRoutes = ['/', '/register', '/login', '/profile', '/verify-info', '/settings', '/forgot-password', '/reset-password'];
-  const profileRoutes = ['/profile', '/settings'];
-  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname) || location.pathname.startsWith('/profile/');
-  const isProfilePage = profileRoutes.includes(location.pathname);
+  const hideNavbarRoutes = [
+    '/',
+    '/register',
+    '/login',
+    '/profile',
+    '/verify-info',
+    '/settings',
+    '/forgot-password',
+    '/reset-password',
+  ];
+
+  const shouldHideNavbar =
+    hideNavbarRoutes.includes(location.pathname) ||
+    location.pathname.startsWith('/profile/');
 
   return (
     <>
       {!shouldHideNavbar && <Navbar />}
       <main>
         <Routes>
+          {/* ── Public ─────────────────────────────────────────────────── */}
           <Route path="/" element={<Landing />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-info" element={<VerifyEmailInfo />} />
-          <Route path="/profile" element={<Profile defaultTab="overview" />} />
-          <Route path="/settings" element={<Profile defaultTab="settings" />} />
           <Route path="/profile/:id" element={<PublicProfile />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/create" element={<EventForm />} />
-          <Route path="/edit/:id" element={<EventForm />} />
+
+          {/* ── Guest only (already-logged-in users are redirected) ─────── */}
+          <Route path="/login"    element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+
+          {/* ── Student portal ─────────────────────────────────────────── */}
+          <Route path="/events"          element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+          <Route path="/events/:id"      element={<ProtectedRoute><EventDetailsPage /></ProtectedRoute>} />
+          <Route path="/register/:id"    element={<ProtectedRoute><RegistrationPage /></ProtectedRoute>} />
+          <Route path="/payment/:id"     element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+          <Route path="/profile"         element={<ProtectedRoute><Profile defaultTab="overview" /></ProtectedRoute>} />
+          <Route path="/settings"        element={<ProtectedRoute><Profile defaultTab="settings" /></ProtectedRoute>} />
+
+          {/* ── Admin portal ───────────────────────────────────────────── */}
+          <Route path="/admin"                  element={<AdminRoute><Dashboard /></AdminRoute>} />
+          <Route path="/admin/events/:id"       element={<AdminRoute><EventDetails /></AdminRoute>} />
+          <Route path="/admin/users"            element={<AdminRoute><UserManagement /></AdminRoute>} />
+          <Route path="/admin/registrations"    element={<AdminRoute><AdminRegistrationsPage /></AdminRoute>} />
+          <Route path="/create"                 element={<AdminRoute><EventForm /></AdminRoute>} />
+          <Route path="/edit/:id"               element={<AdminRoute><EventForm /></AdminRoute>} />
+
+          {/* ── Fallback ───────────────────────────────────────────────── */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </>
@@ -50,93 +96,7 @@ function App() {
     <Router>
       <AppContent />
     </Router>
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
-import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
-
-import HomePage from "./pages/HomePage";
-import EventsPage from "./pages/EventsPage";
-import EventDetailsPage from "./pages/EventDetailsPage";
-import RegistrationPage from "./pages/RegistrationPage";
-import PaymentPage from "./pages/PaymentPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-
-import Dashboard from "./pages/Dashboard";
-import EventForm from "./pages/EventForm";
-import AdminRegistrationsPage from "./pages/AdminRegistrationsPage";
-
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <Navbar />
-        <main>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-
-            {/* Student routes (require login) */}
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/events/:id" element={<EventDetailsPage />} />
-            <Route
-              path="/register/:id"
-              element={
-                <ProtectedRoute>
-                  <RegistrationPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/payment/:id"
-              element={
-                <ProtectedRoute>
-                  <PaymentPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Admin-only routes */}
-            <Route
-              path="/admin"
-              element={
-                <AdminRoute>
-                  <Dashboard />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/create"
-              element={
-                <AdminRoute>
-                  <EventForm />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/registrations"
-              element={
-                <AdminRoute>
-                  <AdminRegistrationsPage />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/edit/:id"
-              element={
-                <AdminRoute>
-                  <EventForm />
-                </AdminRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </Router>
-    </AuthProvider>
   );
 }
 
-export default App;
+export default App;

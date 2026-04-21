@@ -117,7 +117,7 @@ export default function UserManagement() {
     <div className="page-center text-error glass-panel" style={{ padding: '3rem', margin: '2rem auto', maxWidth: '600px' }}>
       <h2>Access Error</h2>
       <p>{error}</p>
-      <button className="btn btn-outline mt-4" onClick={() => navigate('/dashboard')}>Return to Dashboard</button>
+      <button className="btn btn-outline mt-4" onClick={() => navigate('/admin')}>Return to Dashboard</button>
     </div>
   );
 
@@ -129,9 +129,9 @@ export default function UserManagement() {
           <h1 className="admin-title">User Management</h1>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn-add-user" onClick={() => navigate('/')} style={{ background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
+          <button className="btn-add-user" onClick={() => navigate('/admin')} style={{ background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
             <ChevronLeft size={18} />
-            Go to Home
+            Back to Dashboard
           </button>
           <button className="btn-add-user" onClick={() => navigate('/register')}>
             <UserPlus size={18} />

@@ -59,7 +59,7 @@ export default function EventCard({ event, onDelete }) {
         </div>
 
         <div className="card-actions">
-          <Link to={`/events/${event._id}`} className="btn btn-outline card-action">
+          <Link to={`/admin/events/${event._id}`} className="btn btn-outline card-action">
             View Details
           </Link>
 

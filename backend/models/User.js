@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
-      select: false, // Don't return password by default when querying users
+      select: false,
     },
     role: {
       type: String,
@@ -59,45 +59,22 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpires: Date,
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-// Hash the password before saving to the DB
 userSchema.pre("save", async function () {
-  // Only run this function if password was actually modified
   if (!this.isModified("password")) return;
-
-  // Hash the password with cost of 10
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Instance method to check password
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true, minlength: 6 },
-    role: { type: String, enum: ["student", "admin"], default: "student" }
-  },
-  { timestamps: true }
-);
-
-// Hash password before saving
-// Mongoose 9: async hooks must NOT call next() — just return
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-  this.password = await bcrypt.hash(this.password, 12);
-});
-
-// Compare passwords
-userSchema.methods.matchPassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+// Backward-compatible alias used by older code paths.
+userSchema.methods.matchPassword = function (candidatePassword) {
+  return this.comparePassword(candidatePassword);
 };
 
 module.exports = mongoose.model("User", userSchema);
