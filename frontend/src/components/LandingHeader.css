@@ -1,0 +1,246 @@
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
+  background: rgba(11, 15, 25, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lh-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lh-logo .logo-icon {
+  color: #d946ef;
+}
+
+.lh-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.lh-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 0.5rem;
+  transition: color 0.3s;
+}
+
+.lh-links a:hover, .lh-links a.active {
+  color: #d946ef;
+}
+
+.lh-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #d946ef;
+  border-radius: 2px;
+}
+
+.lh-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-login-outline {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.btn-login-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.btn-register-fill {
+  background: linear-gradient(90deg, #d946ef, #fb7185);
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.btn-register-fill:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .lh-links {
+    display: none;
+  }
+}
+
+/* User Profile Styles */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.user-avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.user-link:hover .user-name {
+  color: #d946ef;
+}
+
+.user-link:hover .user-name {
+  color: #d946ef;
+}
+
+.btn-nostyle {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+}
+
+.dropdown-icon {
+  margin-left: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.user-profile {
+  position: relative; /* For the absolute dropdown */
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  background: rgba(11, 15, 25, 0.98);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdown-header {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropdown-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.dropdown-role {
+  color: #d946ef;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  width: 100%;
+}
+
+.dropdown-menu {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dropdown-item.text-danger {
+  color: #fb7185;
+}
+
+.dropdown-item.text-danger:hover {
+  background: rgba(251, 113, 133, 0.1);
+  color: #f43f5e;
+}

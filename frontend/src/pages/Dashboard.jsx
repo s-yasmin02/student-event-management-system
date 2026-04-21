@@ -15,19 +15,19 @@ export default function Dashboard() {
   const [showDrafts, setShowDrafts] = useState(false);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data } = await api.get('/events');
-        setEvents(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch events');
-        setLoading(false);
-      }
-    };
-
     fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data } = await api.get('/events');
+      setEvents(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch events');
+      setLoading(false);
+    }
+  };
 
   const filteredEvents = events.filter(e => {
     if (!showDrafts && e.isDraft) return false;
